@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Gastos - IES Gregorio Prieto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f3f4f6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* LOGIN */
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .login-credentials {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .login-credentials strong {
+            display: block;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .login-credentials code {
+            display: block;
+            margin: 5px 0;
+            padding: 5px;
+            background: white;
+            border-left: 3px solid #667eea;
+            font-size: 11px;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            border-color: #667eea;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        /* GRID */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* TABLA */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        /* FORMULARIO */
+        .form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form input, .form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* LISTA DE SOLICITUDES */
+        .solicitud-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .solicitud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .solicitud-header h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .solicitud-header .monto {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .estado-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .estado-aprobada {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .estado-rechazada {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        /* PROGRESO */
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* NOTIFICACIÓN */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.info {
+            background: #667eea;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPanel" class="login-container">
+    <div class="login-box">
+        <h1>Gestión de Gastos</h1>
+        <p>IES Gregorio Prieto</p>
+        
+        <div class="form-group">
+            <label>Usuario</label>
+            <input type="text" id="loginUser" placeholder="usuario">
+        </div>
+        
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="loginPass" placeholder="contraseña">
+        </div>
+        
+        <button class="btn btn-primary" onclick="login()">Acceder</button>
+        
+        <div class="login-credentials">
+            <strong>Credenciales demo:</strong>
+            <code>admin / admin123</code>
+            <code>automacion / auto2026</code>
+            <code>electricidad / elec2026</code>
+            <code>electronica / elec2026</code>
+            <code>deportes / depo2026</code>
+            <code>ciencias / cien2025</code>
+            <code>administracion / admin2025</code>
+        </div>
+    </div>
+</div>
+
+<!-- APLICACIÓN PRINCIPAL -->
+<div id="appPanel" class="hidden">
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1 id="headerTitle">Panel</h1>
+            <p id="headerSubtitle">Gestión de gastos</p>
+        </div>
+        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="container">
+        <!-- PANEL SECRETARIO -->
+        <div id="secretarioPanel" class="hidden">
+            <div class="grid">
+                <div class="stat-card">
+                    <h3>Departamentos</h3>
+                    <div class="number" id="totalDepts">13</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Solicitudes Pendientes</h3>
+                    <div class="number" id="pendientes">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Aprobadas</h3>
+                    <div class="number" id="aprobadas">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total</h3>
+                    <div class="number" id="totalSolicitudes">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Solicitudes de Gasto</h2>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="filtrarSolicitudes('todas')">Todas</button>
+                    <button class="tab-btn" onclick="filtrarSolicitudes('pendiente')">Pendientes</button>
+                    <button class="tab-btn" onclick="filtrarSolicitudes('aprobada')">Aprobadas</button>
+                    <button class="tab-btn" onclick="filtrarSolicitudes('rechazada')">Rechazadas</button>
+                </div>
+                <div id="listaSolicitudes"></div>
+            </div>
+
+            <div class="card">
+                <h2>Estado de Presupuestos</h2>
+                <div id="listaDepartamentos"></div>
+            </div>
+        </div>
+
+        <!-- PANEL JEFE -->
+        <div id="jefePanel" class="hidden">
+            <div class="grid">
+                <div class="stat-card">
+                    <h3>Presupuesto Base</h3>
+                    <div class="number" id="presupuestoBase">0€</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Ingresos</h3>
+                    <div class="number" id="ingresos">0€</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Disponible</h3>
+                    <div class="number" id="totalDisponible">0€</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Saldo</h3>
+                    <div class="number" id="saldoDisponible">0€</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Uso del Presupuesto</h2>
+                <div id="progressBar"></div>
+            </div>
+
+            <div class="card">
+                <h2>Nueva Solicitud de Gasto</h2>
+                <div class="form">
+                    <input type="text" id="concepto" placeholder="Concepto o descripción" required>
+                    <input type="number" id="importe" placeholder="Importe (€)" step="0.01" required>
+                    <button class="btn btn-secondary" onclick="solicitarGasto()">Enviar Solicitud</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Mis Solicitudes</h2>
+                <div id="misSolicitudes"></div>
+            </div>
+
+            <div class="card">
+                <h2>Historial de Compras</h2>
+                <table id="tablaCompras">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Proveedor</th>
+                            <th>Descripción</th>
+                            <th>Importe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comprasBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // BASE DE DATOS
+    const usuarios = [
+        { username: 'admin', password: 'admin123', rol: 'secretario', nombre: 'Secretario' },
+        { username: 'automacion', password: 'auto2026', rol: 'jefe', departamento: 'Automoción', presupuesto: 6000, ingresos: 820 },
+        { username: 'electricidad', password: 'elec2026', rol: 'jefe', departamento: 'Electricidad', presupuesto: 3250, ingresos: 92.87 },
+        { username: 'electronica', password: 'elec2026', rol: 'jefe', departamento: 'Electrónica', presupuesto: 3250, ingresos: 1246.22 },
+        { username: 'comercio', password: 'come2026', rol: 'jefe', departamento: 'Comercio y Marketing', presupuesto: 2000, ingresos: 0 },
+        { username: 'deportes', password: 'depo2026', rol: 'jefe', departamento: 'Educación Física', presupuesto: 700, ingresos: 0 },
+        { username: 'artes', password: 'arte2026', rol: 'jefe', departamento: 'Artes Plásticas', presupuesto: 250, ingresos: 0 },
+        { username: 'fol', password: 'fol2026', rol: 'jefe', departamento: 'FOL', presupuesto: 110, ingresos: 0 },
+        { username: 'ciencias', password: 'cien2025', rol: 'jefe', departamento: 'Ciencias', presupuesto: 240, ingresos: 1228.79 },
+        { username: 'administracion', password: 'admin2025', rol: 'jefe', departamento: 'Administración', presupuesto: 882.73, ingresos: 3669.99 },
+        { username: 'cultura', password: 'cult2025', rol: 'jefe', departamento: 'Cultura Clásica', presupuesto: 0, ingresos: 0 },
+        { username: 'filosofia', password: 'filo2025', rol: 'jefe', departamento: 'Filosofía', presupuesto: 0, ingresos: 0 },
+        { username: 'fisica', password: 'fis2025', rol: 'jefe', departamento: 'Física y Química', presupuesto: 0, ingresos: 0 },
+    ];
+
+    let solicitudes = [
+        { id: 1, departamento: 'Electrónica', concepto: 'Cable de fibra óptica', importe: 250, estado: 'pendiente', fecha: '2026-04-15' },
+        { id: 2, departamento: 'Educación Física', concepto: 'Colchonetas deportivas', importe: 150, estado: 'aprobada', fecha: '2026-04-10' },
+    ];
+
+    let compras = {
+        'Automoción': [
+            { fecha: '2026-01-20', proveedor: 'TELKRON S.A.', descripcion: 'MATERIAL ELECTRÓNICO', importe: 161.04 },
+            { fecha: '2026-01-21', proveedor: 'AMAZON', descripcion: 'MATERIAL PARA CARROCERÍA', importe: 8.72 },
+        ],
+        'Electricidad': [
+            { fecha: '2026-01-05', proveedor: 'DMELECT S.L.', descripcion: 'SOFTWARE ELECTRICIDAD', importe: 54.45 },
+        ],
+        'Electrónica': [
+            { fecha: '2026-02-03', proveedor: 'TELKRON S.A.', descripcion: 'MATERIAL VARIADO', importe: 306.08 },
+        ],
+    };
+
+    let currentUser = null;
+    let filtroActual = 'todas';
+
+    // LOGIN
+    function login() {
+        const user = document.getElementById('loginUser').value;
+        const pass = document.getElementById('loginPass').value;
+
+        const usuario = usuarios.find(u => u.username === user && u.password === pass);
+        
+        if (usuario) {
+            currentUser = usuario;
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('appPanel').classList.remove('hidden');
+            
+            if (usuario.rol === 'secretario') {
+                mostrarSecretario();
+            } else {
+                mostrarJefe();
+            }
+            notificar('Sesión iniciada ✓', 'success');
+        } else {
+            notificar('Usuario o contraseña incorrectos', 'error');
+        }
+    }
+
+    // LOGOUT
+    function logout() {
+        currentUser = null;
+        document.getElementById('appPanel').classList.add('hidden');
+        document.getElementById('loginPanel').classList.remove('hidden');
+        document.getElementById('loginUser').value = '';
+        document.getElementById('loginPass').value = '';
+    }
+
+    // MOSTRAR PANEL SECRETARIO
+    function mostrarSecretario() {
+        document.getElementById('headerTitle').textContent = 'Panel de Secretaría';
+        document.getElementById('headerSubtitle').textContent = 'Gestión centralizada';
+        document.getElementById('secretarioPanel').classList.remove('hidden');
+        document.getElementById('jefePanel').classList.add('hidden');
+        
+        actualizarEstadisticas();
+        mostrarSolicitudes();
+        mostrarDepartamentos();
+    }
+
+    // MOSTRAR PANEL JEFE
+    function mostrarJefe() {
+        document.getElementById('headerTitle').textContent = currentUser.departamento;
+        document.getElementById('headerSubtitle').textContent = 'Jefe de Departamento';
+        document.getElementById('secretarioPanel').classList.add('hidden');
+        document.getElementById('jefePanel').classList.remove('hidden');
+        
+        actualizarPresupuesto();
+        mostrarMisSolicitudes();
+        mostrarCompras();
+    }
+
+    // ESTADÍSTICAS SECRETARIO
+    function actualizarEstadisticas() {
+        document.getElementById('totalDepts').textContent = usuarios.filter(u => u.rol === 'jefe').length;
+        document.getElementById('pendientes').textContent = solicitudes.filter(s => s.estado === 'pendiente').length;
+        document.getElementById('aprobadas').textContent = solicitudes.filter(s => s.estado === 'aprobada').length;
+        document.getElementById('totalSolicitudes').textContent = solicitudes.length;
+    }
+
+    // MOSTRAR SOLICITUDES
+    function mostrarSolicitudes() {
+        const filtradas = filtroActual === 'todas' ? solicitudes : solicitudes.filter(s => s.estado === filtroActual);
+        
+        let html = '';
+        if (filtradas.length === 0) {
+            html = '<p style="text-align: center; color: #999; padding: 20px;">No hay solicitudes</p>';
+        } else {
+            filtradas.forEach(s => {
+                html += `
+                    <div class="solicitud-item">
+                        <div class="solicitud-header">
+                            <div>
+                                <h3>${s.concepto}</h3>
+                                <p style="color: #666; font-size: 12px;">${s.departamento} • ${s.fecha}</p>
+                                <span class="estado-badge estado-${s.estado}">${s.estado.toUpperCase()}</span>
+                            </div>
+                            <div class="monto">${s.importe.toFixed(2)}€</div>
+                        </div>
+                        ${s.estado === 'pendiente' ? `
+                            <div style="margin-top: 10px;">
+                                <button class="btn btn-secondary" style="width: 48%; margin-right: 2%; padding: 8px;" onclick="autorizarSolicitud(${s.id}, 'aprobada')">Aprobar</button>
+                                <button class="btn btn-danger" style="width: 48%; padding: 8px;" onclick="autorizarSolicitud(${s.id}, 'rechazada')">Rechazar</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('listaSolicitudes').innerHTML = html;
+    }
+
+    // FILTRAR SOLICITUDES
+    function filtrarSolicitudes(estado) {
+        filtroActual = estado;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        mostrarSolicitudes();
+    }
+
+    // AUTORIZAR/RECHAZAR SOLICITUD
+    function autorizarSolicitud(id, estado) {
+        const solicitud = solicitudes.find(s => s.id === id);
+        if (solicitud) {
+            solicitud.estado = estado;
+            mostrarSolicitudes();
+            actualizarEstadisticas();
+            notificar(`Solicitud ${estado === 'aprobada' ? 'aprobada ✓' : 'rechazada ✗'}`, 'success');
+        }
+    }
+
+    // MOSTRAR DEPARTAMENTOS
+    function mostrarDepartamentos() {
+        let html = '';
+        usuarios.filter(u => u.rol === 'jefe').forEach(u => {
+            const total = u.presupuesto + u.ingresos;
+            const gastos = (compras[u.departamento] || []).reduce((sum, c) => sum + c.importe, 0);
+            const saldo = total - gastos;
+            const porcentaje = total > 0 ? Math.round((gastos / total) * 100) : 0;
+
+            html += `
+                <div class="solicitud-item">
+                    <h3>${u.departamento}</h3>
+                    <p style="color: #666; font-size: 12px; margin: 10px 0;">
+                        Presupuesto: <strong>${total.toFixed(2)}€</strong> | 
+                        Disponible: <strong>${saldo.toFixed(2)}€</strong>
+                    </p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${porcentaje}%">${porcentaje}%</div>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('listaDepartamentos').innerHTML = html;
+    }
+
+    // ACTUALIZAR PRESUPUESTO JEFE
+    function actualizarPresupuesto() {
+        const total = currentUser.presupuesto + currentUser.ingresos;
+        const gastos = (compras[currentUser.departamento] || []).reduce((sum, c) => sum + c.importe, 0);
+        const saldo = total - gastos;
+        const porcentaje = total > 0 ? Math.round((gastos / total) * 100) : 0;
+
+        document.getElementById('presupuestoBase').textContent = currentUser.presupuesto.toFixed(2) + '€';
+        document.getElementById('ingresos').textContent = '+' + currentUser.ingresos.toFixed(2) + '€';
+        document.getElementById('totalDisponible').textContent = total.toFixed(2) + '€';
+        document.getElementById('saldoDisponible').textContent = saldo.toFixed(2) + '€';
+        
+        document.getElementById('progressBar').innerHTML = `
+            <p style="margin-bottom: 10px;">Uso del presupuesto: <strong>${porcentaje}%</strong></p>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${porcentaje}%"></div>
+            </div>
+        `;
+    }
+
+    // SOLICITAR GASTO
+    function solicitarGasto() {
+        const concepto = document.getElementById('concepto').value;
+        const importe = document.getElementById('importe').value;
+
+        if (!concepto || !importe) {
+            notificar('Completa todos los campos', 'error');
+            return;
+        }
+
+        const nuevaSolicitud = {
+            id: Math.max(...solicitudes.map(s => s.id), 0) + 1,
+            departamento: currentUser.departamento,
+            concepto: concepto,
+            importe: parseFloat(importe),
+            estado: 'pendiente',
+            fecha: new Date().toISOString().split('T')[0]
+        };
+
+        solicitudes.push(nuevaSolicitud);
+        document.getElementById('concepto').value = '';
+        document.getElementById('importe').value = '';
+        mostrarMisSolicitudes();
+        notificar('Solicitud enviada ✓', 'success');
+    }
+
+    // MIS SOLICITUDES
+    function mostrarMisSolicitudes() {
+        const misSolicitudes = solicitudes.filter(s => s.departamento === currentUser.departamento);
+        let html = '';
+
+        if (misSolicitudes.length === 0) {
+            html = '<p style="text-align: center; color: #999; padding: 20px;">No tienes solicitudes</p>';
+        } else {
+            misSolicitudes.forEach(s => {
+                html += `
+                    <div class="solicitud-item">
+                        <div class="solicitud-header">
+                            <div>
+                                <h3>${s.concepto}</h3>
+                                <p style="color: #666; font-size: 12px;">${s.fecha}</p>
+                                <span class="estado-badge estado-${s.estado}">${s.estado.toUpperCase()}</span>
+                            </div>
+                            <div class="monto">${s.importe.toFixed(2)}€</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('misSolicitudes').innerHTML = html;
+    }
+
+    // MOSTRAR COMPRAS
+    function mostrarCompras() {
+        const misCompras = compras[currentUser.departamento] || [];
+        let html = '';
+
+        if (misCompras.length === 0) {
+            html = '<tr><td colspan="4" style="text-align: center; color: #999;">No hay compras registradas</td></tr>';
+        } else {
+            misCompras.forEach(c => {
+                html += `
+                    <tr>
+                        <td>${c.fecha}</td>
+                        <td>${c.proveedor}</td>
+                        <td>${c.descripcion}</td>
+                        <td style="text-align: right; font-weight: bold;">${c.importe.toFixed(2)}€</td>
+                    </tr>
+                `;
+            });
+        }
+        document.getElementById('comprasBody').innerHTML = html;
+    }
+
+    // NOTIFICACIONES
+    function notificar(mensaje, tipo = 'info') {
+        const notif = document.createElement('div');
+        notif.className = `notification ${tipo}`;
+        notif.textContent = mensaje;
+        document.body.appendChild(notif);
+
+        setTimeout(() => {
+            notif.remove();
+        }, 3500);
+    }
+
+    // ENTER EN LOGIN
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('loginPass').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+    });
+</script>
+
+</body>
+</html>
